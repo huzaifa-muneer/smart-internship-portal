@@ -1,8 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Keep sql.js as external — do NOT let webpack bundle it
+  serverExternalPackages: ['sql.js'],
   experimental: {
     serverActions: { bodySizeLimit: '8mb' },
-    serverComponentsExternalPackages: ['sql.js'],
   },
   webpack: (config, { isServer }) => {
     if (!isServer) {
@@ -13,11 +14,6 @@ const nextConfig = {
         crypto: false,
       };
     }
-    // Handle sql.js wasm
-    config.module.rules.push({
-      test: /\.wasm$/,
-      type: 'asset/resource',
-    });
     return config;
   },
 };
