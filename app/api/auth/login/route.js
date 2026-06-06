@@ -1,0 +1,3 @@
+import { NextResponse } from 'next/server';import bcrypt from 'bcryptjs';import { getDb } from '@/lib/db';import { signUser,safeUser } from '@/lib/auth';
+export const dynamic='force-dynamic';
+export async function POST(req){try{const b=await req.json();const db=await getDb();const user=db.prepare('SELECT * FROM users WHERE email=? AND role=?').get(String(b.email||'').toLowerCase(),b.role);if(!user||!bcrypt.compareSync(b.password||'',user.password_hash))return NextResponse.json({error:'Invalid email, password, or role'},{status:401});return NextResponse.json({user:safeUser(user),token:signUser(user)});}catch(e){return NextResponse.json({error:e.message},{status:500})}}
